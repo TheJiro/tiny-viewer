@@ -13,15 +13,34 @@
   </form>
 
   <script>
-    // Initialize TinyMCE with predefined content
+    // Function to fetch content from Power Automate Flow
+    async function fetchFlowContent() {
+      try {
+        // Power Automate Flow URL
+        const response = await fetch('https://prod-206.westeurope.logic.azure.com:443/workflows/d3dbff22b3b14910a370af3b824197f6/triggers/manual/paths/invoke?api-version=2016-06-01');
+        if (response.ok) {
+          const data = await response.json();
+          return data.content; // Extract the content field from the response
+        } else {
+          console.error('Error fetching content:', response.statusText);
+          return '<p>Error loading content</p>';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        return '<p>Error fetching data</p>';
+      }
+    }
+
+    // Initialize TinyMCE
     tinymce.init({
       selector: '#editor',
       plugins: 'autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen',
       toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link',
       height: 300,
-      setup: function (editor) {
-        editor.on('init', function () {
-          editor.setContent('<p><strong>This is preloaded content!</strong> Edit it as needed.</p>');
+      setup: async function (editor) {
+        editor.on('init', async function () {
+          const flowContent = await fetchFlowContent(); // Fetch content dynamically
+          editor.setContent(flowContent); // Set fetched content
         });
       }
     });
