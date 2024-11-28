@@ -1,76 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rich Text Viewer</title>
-  <script src="https://cdn.tiny.cloud/1/1a3bhjyue59gsham7kcryyr5poheddgco0g7fvm1p8zjy2pw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-  <style>
-    /* Style for the read-only mode label */
-    .readonly-label {
-      background-color: #f44336;
-      color: white;
-      padding: 10px;
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      margin: 20px 0;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rich Text Viewer</title>
+<script src="https://cdn.tiny.cloud/1/1a3bhjyue59gsham7kcryyr5poheddgco0g7fvm1p8zjy2pw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 </head>
 <body>
-  <!-- Read-Only Mode Label -->
-  <div class="readonly-label">This page is in READ-ONLY mode</div>
-
-  <h2>Rich Text Viewer</h2>
-  <form id="editorForm">
-    <textarea id="editor"></textarea>
-  </form>
-
+<h2>Rich Text Viewer</h2>
+<form id="editorForm">
+<textarea id="editor"></textarea>
+</form>
+ 
   <script>
+
     // Function to fetch content from Power Automate Flow
+
     async function fetchFlowContent() {
+
       try {
+
         // Power Automate Flow URL
+
         const response = await fetch('https://prod-206.westeurope.logic.azure.com:443/workflows/d3dbff22b3b14910a370af3b824197f6/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=LvmqVAQDcW-o_S1owJkdQM3DHdKR9WFtuBPuo3Y4c7M', {
+
           method: 'POST'
-        });
 
+        });
+ 
         if (response.ok) {
+
           const data = await response.text(); // Parse response as plain text or HTML
+
           return data; // Return raw response as content
+
         } else {
+
           console.error('Error fetching content:', response.statusText);
+
           return '<p>Error loading content</p>'; // Error fallback
+
         }
+
       } catch (error) {
+
         console.error('Error:', error);
+
         return '<p>Error fetching data</p>'; // Error fallback
+
       }
+
     }
-
+ 
     // Initialize TinyMCE
+
     tinymce.init({
+
       selector: '#editor',
+
       plugins: 'autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen',
+
       toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link fullscreen',
+
       height: 300,
+
+      readonly: true, // Set editor to read-only mode
+
       setup: async function (editor) {
+
         editor.on('init', async function () {
+
           const flowContent = await fetchFlowContent(); // Fetch content dynamically
+
           editor.setContent(flowContent); // Set fetched content
-
+ 
           // Trigger fullscreen mode on initialization
-          editor.execCommand('mceFullScreen');
-          
-          // Make the editor read-only
-          editor.setMode('readonly');
 
-          // Optionally show an alert or message (pop-up)
-          alert('This page is in READ-ONLY mode.');
+          editor.execCommand('mceFullScreen');
+
         });
+
       }
+
     });
-  </script>
+</script>
 </body>
 </html>
