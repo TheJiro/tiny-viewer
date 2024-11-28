@@ -40,6 +40,7 @@
       plugins: 'autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen',
       toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link fullscreen',
       height: 300,
+      readonly: true, // Set editor to read-only mode
       setup: async function (editor) {
         editor.on('init', async function () {
           const flowContent = await fetchFlowContent(); // Fetch content dynamically
@@ -53,5 +54,3 @@
   </script>
 </body>
 </html>
-
-
