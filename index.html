@@ -11,7 +11,7 @@
 <form id="editorForm">
 <textarea id="editor"></textarea>
 </form>
- <script>
+<script>
   // Function to fetch query parameters
   function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
@@ -46,22 +46,22 @@
     }
   }
 
-  // Initialize TinyMCE
+  // Initialize TinyMCE with proper readonly handling
   tinymce.init({
     selector: '#editor',
     plugins: 'autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen',
-    toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link fullscreen',
+    toolbar: false, // Hide the toolbar in read-only mode
+    menubar: false, // Disable the menu bar
     height: 300,
-    readonly: 1,
+    readonly: true, // Enforce read-only mode
     setup: async function (editor) {
       editor.on('init', async function () {
         const flowContent = await fetchFlowContent(acReg); // Fetch content dynamically
         editor.setContent(flowContent); // Set fetched content
+        editor.getBody().setAttribute('contenteditable', false); // Reinforce read-only mode
       });
     }
   });
 </script>
-
-
 </body>
 </html>
