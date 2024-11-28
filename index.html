@@ -22,7 +22,7 @@
         });
 
         if (response.ok) {
-          const data = await response.json();
+          const data = await response.text();
           return data.content; // Extract the content field from the response
         } else {
           console.error('Error fetching content:', response.statusText);
