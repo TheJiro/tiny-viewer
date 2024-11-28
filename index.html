@@ -5,9 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rich Text Viewer</title>
 <script src="https://cdn.tiny.cloud/1/1a3bhjyue59gsham7kcryyr5poheddgco0g7fvm1p8zjy2pw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+</style>
 </head>
 <body>
-<h2>Rich Text Viewer</h2>
 <form id="editorForm">
 <textarea id="editor"></textarea>
 </form>
@@ -53,17 +58,20 @@
   tinymce.init({
     selector: '#editor',
     plugins: 'autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen',
-    toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link fullscreen',
-    height: 300,
-    readonly: 1,
+    toolbar: 'fullscreen', // Minimal toolbar for fullscreen
+    height: '100%', // Take full height
+    readonly: true, // Set to read-only mode
+    menubar: false, // Remove the menu bar
     setup: async function (editor) {
       editor.on('init', async function () {
         const flowContent = await fetchFlowContent(acReg); // Fetch content dynamically
         console.log("Fetched content for editor:", flowContent); // Debugging
         editor.setContent(flowContent); // Set fetched content
+        editor.execCommand('mceFullScreen'); // Open fullscreen by default
       });
     }
   });
 </script>
 </body>
 </html>
+
