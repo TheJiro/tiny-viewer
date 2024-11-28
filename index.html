@@ -38,28 +38,15 @@
     tinymce.init({
       selector: '#editor',
       plugins: 'autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen',
-      toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link',
+      toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link fullscreen',
       height: 300,
       setup: async function (editor) {
         editor.on('init', async function () {
           const flowContent = await fetchFlowContent(); // Fetch content dynamically
           editor.setContent(flowContent); // Set fetched content
 
-          // Adjust editor height dynamically
-          const editorContainer = editor.getContainer();
-          const editorContent = editor.getContent({ format: 'html' });
-          const tempDiv = document.createElement('div');
-          tempDiv.style.width = editorContainer.offsetWidth + 'px';
-          tempDiv.style.position = 'absolute';
-          tempDiv.style.visibility = 'hidden';
-          tempDiv.innerHTML = editorContent;
-
-          document.body.appendChild(tempDiv);
-          const contentHeight = tempDiv.offsetHeight;
-          document.body.removeChild(tempDiv);
-
-          // Set the editor height
-          editor.theme.resizeTo(null, Math.max(contentHeight + 50, 300)); // Add padding and ensure a minimum height
+          // Trigger fullscreen mode on initialization
+          editor.execCommand('mceFullScreen');
         });
       }
     });
