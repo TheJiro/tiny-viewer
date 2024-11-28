@@ -22,15 +22,15 @@
         });
 
         if (response.ok) {
-          const data = await response.text();
-          return data.content; // Extract the content field from the response
+          const data = await response.text(); // Parse response as plain text or HTML
+          return data; // Return raw response as content
         } else {
           console.error('Error fetching content:', response.statusText);
-          return '<p>Error loading content</p>';
+          return '<p>Error loading content</p>'; // Error fallback
         }
       } catch (error) {
         console.error('Error:', error);
-        return '<p>Error fetching data</p>';
+        return '<p>Error fetching data</p>'; // Error fallback
       }
     }
 
