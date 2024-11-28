@@ -44,10 +44,27 @@
         editor.on('init', async function () {
           const flowContent = await fetchFlowContent(); // Fetch content dynamically
           editor.setContent(flowContent); // Set fetched content
+
+          // Adjust editor height dynamically
+          const editorContainer = editor.getContainer();
+          const editorContent = editor.getContent({ format: 'html' });
+          const tempDiv = document.createElement('div');
+          tempDiv.style.width = editorContainer.offsetWidth + 'px';
+          tempDiv.style.position = 'absolute';
+          tempDiv.style.visibility = 'hidden';
+          tempDiv.innerHTML = editorContent;
+
+          document.body.appendChild(tempDiv);
+          const contentHeight = tempDiv.offsetHeight;
+          document.body.removeChild(tempDiv);
+
+          // Set the editor height
+          editor.theme.resizeTo(null, Math.max(contentHeight + 50, 300)); // Add padding and ensure a minimum height
         });
       }
     });
   </script>
 </body>
 </html>
+
 
