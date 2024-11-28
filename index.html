@@ -21,7 +21,7 @@
 
   // Fetch the ACReg from the query string
   const acReg = getQueryParam('ACReg');
-  console.log("ACReg:", acReg); // Debugging
+  console.log("ACReg from URL:", acReg); // Debugging
 
   // Function to fetch content from Power Automate Flow
   async function fetchFlowContent(acReg) {
@@ -35,16 +35,17 @@
         body: JSON.stringify({ ACReg: acReg }) // Pass ACReg to the Flow
       });
 
+      console.log("Response status:", response.status); // Debugging
       if (response.ok) {
         const data = await response.text(); // Parse response as plain text or HTML
-        console.log("Response content:", data); // Debugging
+        console.log("Response content from Flow:", data); // Debugging
         return data; // Return fetched content
       } else {
         console.error('Error fetching content:', response.statusText);
         return '<p>Error loading content</p>'; // Error fallback
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error in fetchFlowContent:', error);
       return '<p>Error fetching data</p>'; // Error fallback
     }
   }
@@ -58,9 +59,10 @@
     readonly: true, // Set editor to read-only mode
     setup: async function (editor) {
       editor.on('init', async function () {
-        // Fetch content dynamically using the ACReg parameter
-        const flowContent = await fetchFlowContent(acReg);
-        editor.setContent(flowContent); // Set fetched content in the editor
+        console.log("Initializing editor..."); // Debugging
+        const flowContent = await fetchFlowContent(acReg); // Fetch content dynamically
+        console.log("Fetched content for editor:", flowContent); // Debugging
+        editor.setContent(flowContent || '<p>No content available</p>'); // Set fetched content or fallback
 
         // Trigger fullscreen mode on initialization
         editor.execCommand('mceFullScreen');
