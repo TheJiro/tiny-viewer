@@ -5,8 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rich Text Viewer</title>
   <script src="https://cdn.tiny.cloud/1/1a3bhjyue59gsham7kcryyr5poheddgco0g7fvm1p8zjy2pw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <style>
+    /* Style for the read-only mode label */
+    .readonly-label {
+      background-color: #f44336;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+  </style>
 </head>
 <body>
+  <!-- Read-Only Mode Label -->
+  <div class="readonly-label">This page is in READ-ONLY mode</div>
+
   <h2>Rich Text Viewer</h2>
   <form id="editorForm">
     <textarea id="editor"></textarea>
@@ -40,7 +55,6 @@
       plugins: 'autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen',
       toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link fullscreen',
       height: 300,
-      readonly: true, // Set editor to read-only mode
       setup: async function (editor) {
         editor.on('init', async function () {
           const flowContent = await fetchFlowContent(); // Fetch content dynamically
@@ -48,6 +62,12 @@
 
           // Trigger fullscreen mode on initialization
           editor.execCommand('mceFullScreen');
+          
+          // Make the editor read-only
+          editor.setMode('readonly');
+
+          // Optionally show an alert or message (pop-up)
+          alert('This page is in READ-ONLY mode.');
         });
       }
     });
