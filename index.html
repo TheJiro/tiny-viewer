@@ -1,74 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rich Text Viewer</title>
-<script src="https://cdn.tiny.cloud/1/1a3bhjyue59gsham7kcryyr5poheddgco0g7fvm1p8zjy2pw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rich Text Viewer</title>
+  <script src="https://cdn.tiny.cloud/1/1a3bhjyue59gsham7kcryyr5poheddgco0g7fvm1p8zjy2pw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 </head>
 <body>
-<h2>Rich Text Viewer</h2>
-<form id="editorForm">
-<textarea id="editor"></textarea>
-</form>
+  <h2>Rich Text Viewer</h2>
+  <form id="editorForm">
+    <textarea id="editor"></textarea>
+  </form>
 
-<script>
-  // Function to fetch query parameters
-  function getQueryParam(param) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param);
-  }
+  <script>
+    // Function to fetch query parameters
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
 
-  // Fetch the ACReg from the query string
-  const acReg = getQueryParam('ACReg');
-  console.log("ACReg from URL:", acReg); // Debugging
+    // Fetch the ACReg from the query string
+    const acReg = getQueryParam('ACReg');
+    console.log("ACReg:", acReg); // Debugging
 
-  // Function to fetch content from Power Automate Flow
-  async function fetchFlowContent(acReg) {
-    try {
-      // Power Automate Flow URL
-      const response = await fetch('https://prod-206.westeurope.logic.azure.com:443/workflows/d3dbff22b3b14910a370af3b824197f6/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=LvmqVAQDcW-o_S1owJkdQM3DHdKR9WFtuBPuo3Y4c7M', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ACReg: acReg }) // Pass ACReg to the Flow
-      });
+    // Function to fetch content from Power Automate Flow
+    async function fetchFlowContent(acReg) {
+      try {
+        console.log("Sending request with ACReg:", acReg); // Debugging
+        const response = await fetch(
+          'https://prod-206.westeurope.logic.azure.com:443/workflows/d3dbff22b3b14910a370af3b824197f6/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=LvmqVAQDcW-o_S1owJkdQM3DHdKR9WFtuBPuo3Y4c7M',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ACReg: acReg }),
+          }
+        );
 
-      console.log("Response status:", response.status); // Debugging
-      if (response.ok) {
-        const data = await response.text(); // Parse response as plain text or HTML
-        console.log("Response content from Flow:", data); // Debugging
-        return data; // Return fetched content
-      } else {
-        console.error('Error fetching content:', response.statusText);
-        return '<p>Error loading content</p>'; // Error fallback
+        console.log("Response status:", response.status); // Debugging
+        if (response.ok) {
+          const data = await response.text(); // Parse response as plain text or HTML
+          console.log("Content fetched from Flow:", data); // Debugging
+          return data; // Return the fetched content
+        } else {
+          console.error("Error fetching content:", response.statusText);
+          return "<p>Error loading content</p>"; // Error fallback
+        }
+      } catch (error) {
+        console.error("Error in fetchFlowContent:", error);
+        return "<p>Error fetching data</p>"; // Error fallback
       }
-    } catch (error) {
-      console.error('Error in fetchFlowContent:', error);
-      return '<p>Error fetching data</p>'; // Error fallback
     }
-  }
 
-  // Initialize TinyMCE
-  tinymce.init({
-    selector: '#editor',
-    plugins: 'autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen',
-    toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link fullscreen',
-    height: 300,
-    readonly: true, // Set editor to read-only mode
-    setup: async function (editor) {
-      editor.on('init', async function () {
-        console.log("Initializing editor..."); // Debugging
-        const flowContent = await fetchFlowContent(acReg); // Fetch content dynamically
-        console.log("Fetched content for editor:", flowContent); // Debugging
-        editor.setContent(flowContent || '<p>No content available</p>'); // Set fetched content or fallback
-
-        // Trigger fullscreen mode on initialization
-        editor.execCommand('mceFullScreen');
-      });
-    }
-  });
-</script>
+    // Initialize TinyMCE
+    tinymce.init({
+      selector: '#editor',
+      plugins: 'fullscreen',
+      toolbar: 'fullscreen',
+      height: 300,
+      readonly: true, // Set editor to read-only mode
+      setup: async function (editor) {
+        editor.on('init', async function () {
+          const flowContent = await fetchFlowContent(acReg); // Fetch content dynamically
+          editor.setContent(flowContent || `<p>No content available for ACReg: ${acReg}</p>`); // Set content or fallback
+          editor.execCommand('mceFullScreen'); // Trigger fullscreen mode on initialization
+        });
+      },
+    });
+  </script>
 </body>
 </html>
+
